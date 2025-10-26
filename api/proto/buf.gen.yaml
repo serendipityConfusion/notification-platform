@@ -1,0 +1,23 @@
+version: v1
+plugins:
+  - name: go
+    out: ../../
+    opt:
+      - module=github.com/serendipityConfusion/notification-platform
+      - paths=import
+  - name: go-grpc
+    out: ../../
+    opt:
+      - module=github.com/serendipityConfusion/notification-platform
+      - paths=import
+
+#version: v1
+#plugins:
+#  - name: go
+#    out: ../gen
+#    opt:
+#      - paths=source_relative
+#  - name: go-grpc
+#    out: ../gen
+#    opt:
+#      - paths=source_relative
