@@ -12,5 +12,6 @@ var (
 		ioc.InitIDGenerator,
 		ioc.InitDistributedLock,
 		ioc.InitEtcdClient,
+		ioc.InitJeagerTracer,
 	)
 )
