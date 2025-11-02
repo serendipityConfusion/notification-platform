@@ -8,6 +8,9 @@ import (
 var (
 	BaseSet = wire.NewSet(
 		ioc.InitDB,
+		ioc.InitRedis,
+		ioc.InitIDGenerator,
 		ioc.InitDistributedLock,
+		ioc.InitEtcdClient,
 	)
 )
