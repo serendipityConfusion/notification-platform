@@ -4,3 +4,7 @@ mysql:
 redis:
   addr: "localhost:6379"
   password: ""
+
+notification-server:
+  addr: "0.0.0.0:8080"
+  name: "notification-server"

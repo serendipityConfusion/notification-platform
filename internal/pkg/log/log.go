@@ -6,6 +6,7 @@ import (
 
 type LoggerInterface interface {
 	Error(msg string, fields ...zap.Field)
+	Info(msg string, fields ...zap.Field)
 }
 
 var _ LoggerInterface = (*Logger)(nil)
