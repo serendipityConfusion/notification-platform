@@ -10,6 +10,8 @@ import (
 	"github.com/google/wire"
 	"github.com/serendipityConfusion/notification-platform/internal/api/grpc"
 	"github.com/serendipityConfusion/notification-platform/internal/ioc"
+	"github.com/serendipityConfusion/notification-platform/internal/pkg/config"
+	"github.com/serendipityConfusion/notification-platform/internal/pkg/registry"
 	"github.com/serendipityConfusion/notification-platform/internal/repository"
 	"github.com/serendipityConfusion/notification-platform/internal/repository/cache/redis"
 	"github.com/serendipityConfusion/notification-platform/internal/repository/dao"
@@ -26,10 +28,16 @@ func InitGrpcServer() *ioc.App {
 	notificationRepository := repository.NewNotificationRepository(notificationDAO, quotaCache)
 	serviceService := service.NewNotificationService(notificationRepository)
 	notificationServer := grpc.NewServer(serviceService)
+	server := ioc.InitGrpc(notificationServer)
 	clientv3Client := ioc.InitEtcdClient()
-	server := ioc.InitGrpc(notificationServer, clientv3Client)
+	etcdRegistry := ioc.InitRegistry(clientv3Client)
+	viperConfigLoader := ioc.InitConfigLoader()
+	serviceInfo := ioc.InitServiceInfo()
 	app := &ioc.App{
-		GrpcServer: server,
+		GrpcServer:   server,
+		Registry:     etcdRegistry,
+		ConfigLoader: viperConfigLoader,
+		ServiceInfo:  serviceInfo,
 	}
 	return app
 }
@@ -38,6 +46,9 @@ func InitGrpcServer() *ioc.App {
 
 var (
 	BaseSet = wire.NewSet(ioc.InitDB, ioc.InitRedis, ioc.InitIDGenerator, ioc.InitDistributedLock, ioc.InitEtcdClient, ioc.InitJeagerTracer)
+
+	// RegistrySet 服务注册相关依赖
+	RegistrySet = wire.NewSet(ioc.InitRegistry, ioc.InitConfigLoader, ioc.InitServiceInfo, wire.Bind(new(registry.Registry), new(*registry.EtcdRegistry)), wire.Bind(new(config.ConfigLoader), new(*config.ViperConfigLoader)))
 
 	notificationSvcSet = wire.NewSet(service.NewNotificationService, repository.NewNotificationRepository, dao.NewNotificationDAO, redis.NewQuotaCache)
 )

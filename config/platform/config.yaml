@@ -8,3 +8,7 @@ redis:
 notification-server:
   addr: "0.0.0.0:8080"
   name: "notification-server"
+
+etcd:
+  endpoints: ["localhost:2379"]
+  dial-timeout: 5s

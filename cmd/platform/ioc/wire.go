@@ -6,6 +6,8 @@ import (
 	"github.com/google/wire"
 	grpcapi "github.com/serendipityConfusion/notification-platform/internal/api/grpc"
 	"github.com/serendipityConfusion/notification-platform/internal/ioc"
+	"github.com/serendipityConfusion/notification-platform/internal/pkg/config"
+	"github.com/serendipityConfusion/notification-platform/internal/pkg/registry"
 	"github.com/serendipityConfusion/notification-platform/internal/repository"
 	"github.com/serendipityConfusion/notification-platform/internal/repository/cache/redis"
 	"github.com/serendipityConfusion/notification-platform/internal/repository/dao"
@@ -22,6 +24,15 @@ var (
 		ioc.InitJeagerTracer,
 	)
 
+	// RegistrySet 服务注册相关依赖
+	RegistrySet = wire.NewSet(
+		ioc.InitRegistry,
+		ioc.InitConfigLoader,
+		ioc.InitServiceInfo,
+		wire.Bind(new(registry.Registry), new(*registry.EtcdRegistry)),
+		wire.Bind(new(config.ConfigLoader), new(*config.ViperConfigLoader)),
+	)
+
 	notificationSvcSet = wire.NewSet(
 		service.NewNotificationService,
 		repository.NewNotificationRepository,
@@ -33,6 +44,7 @@ var (
 func InitGrpcServer() *ioc.App {
 	wire.Build(
 		BaseSet,
+		RegistrySet,
 		notificationSvcSet,
 		grpcapi.NewServer,
 		ioc.InitGrpc,
