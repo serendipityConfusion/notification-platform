@@ -26,8 +26,8 @@ func InitGrpcServer() *ioc.App {
 	client := ioc.InitRedis()
 	quotaCache := redis.NewQuotaCache(client)
 	notificationRepository := repository.NewNotificationRepository(notificationDAO, quotaCache)
-	serviceService := service.NewNotificationService(notificationRepository)
-	notificationServer := grpc.NewServer(serviceService)
+	loggerInterface := ioc.InitLogger()
+	notificationServer := grpc.NewServer(notificationRepository, loggerInterface)
 	server := ioc.InitGrpc(notificationServer)
 	clientv3Client := ioc.InitEtcdClient()
 	etcdRegistry := ioc.InitRegistry(clientv3Client)
@@ -45,7 +45,7 @@ func InitGrpcServer() *ioc.App {
 // wire.go:
 
 var (
-	BaseSet = wire.NewSet(ioc.InitDB, ioc.InitRedis, ioc.InitIDGenerator, ioc.InitDistributedLock, ioc.InitEtcdClient, ioc.InitJeagerTracer)
+	BaseSet = wire.NewSet(ioc.InitDB, ioc.InitRedis, ioc.InitIDGenerator, ioc.InitDistributedLock, ioc.InitEtcdClient, ioc.InitJeagerTracer, ioc.InitLogger)
 
 	// RegistrySet 服务注册相关依赖
 	RegistrySet = wire.NewSet(ioc.InitRegistry, ioc.InitConfigLoader, ioc.InitServiceInfo, wire.Bind(new(registry.Registry), new(*registry.EtcdRegistry)), wire.Bind(new(config.ConfigLoader), new(*config.ViperConfigLoader)))

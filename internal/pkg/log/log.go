@@ -7,6 +7,7 @@ import (
 type LoggerInterface interface {
 	Error(msg string, fields ...zap.Field)
 	Info(msg string, fields ...zap.Field)
+	Warn(msg string, fields ...zap.Field)
 }
 
 var _ LoggerInterface = (*Logger)(nil)
@@ -17,6 +18,10 @@ type Logger struct {
 
 func (l *Logger) Error(msg string, fields ...zap.Field) {
 	l.Logger.Error(msg, fields...)
+}
+
+func (l *Logger) Warn(msg string, fields ...zap.Field) {
+	l.Logger.Warn(msg, fields...)
 }
 
 func DefaultLogger() LoggerInterface {

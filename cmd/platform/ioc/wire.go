@@ -22,6 +22,7 @@ var (
 		ioc.InitDistributedLock,
 		ioc.InitEtcdClient,
 		ioc.InitJeagerTracer,
+		ioc.InitLogger,
 	)
 
 	// RegistrySet 服务注册相关依赖
